@@ -4,47 +4,131 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - VibeWire</title>
+    <link href="~/images/favicon.png" rel="icon" type="image" />
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/tailwind.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/VibeWire.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">VibeWire</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
+
+    <div id="wrapper" class="pt-[--m-top]">
+
+        @* top bar *@
+        <header class="z-[100] h-[--m-top] fixed top-0 left-0 w-full bg-white/80 backdrop-blur-xl border-b border-slate-200">
+            <div class="h-full px-4 flex items-center justify-between gap-4">
+
+                @* logo and title *@
+                <div class="flex items-center gap-3 shrink-0">
+                    <button uk-toggle="target: #site__sidebar; cls: !-translate-x-0"
+                            class="flex items-center justify-center w-8 h-8 text-xl rounded-full hover:bg-slate-100 xl:hidden group">
+                        <ion-icon name="menu-outline" class="text-2xl group-aria-expanded:hidden text-slate-700"></ion-icon>
+                        <ion-icon name="close-outline" class="hidden text-2xl group-aria-expanded:block text-slate-700"></ion-icon>
+                    </button>
+
+                    <div id="logo" class="flex items-center">
+                        <a href="/" class="flex items-center gap-1 no-underline">
+                            <img src="~/images/logo.png" alt="VibeWire Logo" class="w-10 md:block hidden">
+                            <span class="ml-2 font-bold text-xl text-gray-800 tracking-tight">VibeWire</span>
+                        </a>
+                    </div>
                 </div>
+
+                @* search bar *@
+                <div class="flex-1 max-w-[680px] hidden md:block">
+                    <form id="search--box" class="flex items-center rounded-xl bg-slate-100 h-10 w-full px-4 transition-all focus-within:bg-slate-200/70 m-0 border-0">
+                        <ion-icon name="search" class="text-slate-400 text-lg shrink-0"></ion-icon>
+
+                        <input type="text" name="query" placeholder="Search Posts, Friends..."
+                               class="flex-1 w-full h-full pl-3 pr-2 font-normal bg-transparent text-sm text-slate-800 placeholder-slate-400 border-0 focus:outline-none focus:ring-0 shadow-none m-0" />
+                    </form>
+                </div>
+
+                @* notif and profile *@
+                <div class="flex items-center gap-4 shrink-0">
+
+                  
+                    <div class="flex items-center gap-4 shrink-0">
+
+                        @* notification *@
+                        <div class="relative block">
+                            <button type="button" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 transition flex items-center justify-center border-0 p-0 m-0" style="position: relative;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#334155" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="block">
+                                    <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                                    <path d="M13.73 21a2 2 0 01-3.46 0" />
+                                    <path d="M2 8c0-2.2.7-4.3 2-6" />
+                                    <path d="M22 8a10 10 0 00-2-6" />
+                                </svg>
+                                <span class="bg-red-600 text-white font-black rounded-full border-2 border-white shadow-sm flex items-center justify-center"
+                                      style="position: absolute; top: -4px; right: -4px; width: 18px; height: 18px; font-size: 10px; line-height: 1; padding: 0; margin: 0; box-sizing: border-box;"
+                                      id="notificationsCount">0</span>
+                            </button>
+
+                            <div class="hidden bg-white rounded-lg drop-shadow-xl md:w-[365px] w-80 border border-slate-100" uk-drop="offset:6; pos: bottom-right; mode:click; animate-out: true;">
+                                <div class="flex items-center justify-between gap-2 p-4 pb-2">
+                                    <h3 class="font-bold text-xl text-slate-800 m-0">Notifications</h3>
+                                </div>
+                                <div class="text-sm h-[400px] w-full overflow-y-auto pr-2">
+                                    <div class="pl-3 p-3 text-sm font-normal text-slate-500" id="notification-dropdown">
+                                        No notifications...
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        @* profile dropdown *@
+                        <div class="relative block">
+                            <div class="rounded-full p-0.5 bg-slate-100 hover:bg-slate-200 transition cursor-pointer shrink-0">
+                                <img src="~/images/avatar/formal.png" alt="User Avatar" class="sm:w-8 sm:h-8 w-7 h-7 rounded-full shadow-sm shrink-0 object-cover block" />
+                            </div>
+
+                            <div class="hidden bg-white rounded-lg drop-shadow-xl w-64 border border-slate-100 p-4" uk-drop="offset:6; pos: bottom-right; animate-out: true;">
+                                <div class="flex items-center gap-3 pb-3 border-b border-slate-100">
+                                    <img src="~/images/avatar/formal.png" alt="User Avatar" class="w-10 h-10 rounded-full shadow-sm object-cover" />
+                                    <div class="overflow-hidden">
+                                        <h4 class="text-sm font-semibold text-slate-800 truncate m-0">Mark Joseph Potot</h4>
+                                        <div class="text-xs text-blue-600 truncate mt-0.5">mark.potot2004@gmail.com</div>
+                                    </div>
+                                </div>
+
+                                <nav class="mt-2 space-y-1">
+                                    <a href="#" class="flex items-center gap-2.5 hover:bg-slate-50 p-2 rounded-md text-sm text-slate-700 transition no-underline">
+                                        <ion-icon name="settings-outline" class="text-lg text-slate-500"></ion-icon>
+                                        My Account
+                                    </a>
+                                    <a href="#" class="flex items-center gap-2.5 hover:bg-slate-50 p-2 rounded-md text-sm text-red-600 transition no-underline">
+                                        <ion-icon name="exit-outline" class="text-lg text-red-500"></ion-icon>
+                                        Log Out
+                                    </a>
+                                </nav>
+                            </div>
+                        </div>
+
+                    </div>
             </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+        </header>
+
+        @* Side bar left *@
+
+        <main>
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - VibeWire - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
+    @* Backing Scripts *@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @* Ionicons Scripts Required for <ion-icon> tags *@
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+    @* Asset Script *@
+    <script src="~/js/uikit.min.js"></script>
+    <script src="~/js/simplebar.js"></script>
+    <script src="~/js/script.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
