@@ -2,6 +2,36 @@
 @{
     ViewData["Title"] = "Home Page";
 }
+@functions {
+    public string GetTimeAgo(DateTime dateCreated)
+    {
+      
+        TimeSpan timeSince = DateTime.UtcNow - dateCreated.ToUniversalTime();
+
+        if (timeSince.TotalSeconds < 60)
+        {
+            return "Just now";
+        }
+        if (timeSince.TotalMinutes < 60)
+        {
+            int minutes = (int)timeSince.TotalMinutes;
+            return $"{minutes} {(minutes == 1 ? "minute" : "minutes")} ago";
+        }
+        if (timeSince.TotalHours < 24)
+        {
+            int hours = (int)timeSince.TotalHours;
+            return $"{hours} {(hours == 1 ? "hour" : "hours")} ago";
+        }
+        if (timeSince.TotalDays < 7)
+        {
+            int days = (int)timeSince.TotalDays;
+            return $"{days} {(days == 1 ? "day" : "days")} ago";
+        }
+
+       
+        return dateCreated.ToString("MMM dd, yyyy");
+    }
+}
 
 <main id="site__main" class="2xl:ml-[--w-side] xl:ml-[--w-side-sm] p-2.5 h-[calc(100vh-var(--m-top))] mt-[--m-top]">
     <div class="lg:flex 2xl:gap-16 gap-12 max-w-[1065px] mx-auto w-full" id="js-oversized">
@@ -60,7 +90,7 @@
 
                 <button type="button"
                         uk-toggle="target: #create-post"
-                        class="flex-1 bg-slate-100/70 hover:bg-slate-100 text-left text-slate-400 rounded-full py-2.5 px-5 text-sm transition cursor-pointer font-normal">
+                        class="flex-1 bg-slate-100 hover:bg-slate-100 text-left text-slate-400 rounded-full py-2.5 px-5 text-sm transition cursor-pointer font-normal">
                     What's on your mind?
                 </button>
 
@@ -94,7 +124,7 @@
                         <div class="flex-1">
                             <a href="#">
                                 <h4 class="text-black font-semibold">@post.User.FullName</h4>
-                                <div class="text-xs text-gray-400 mt-0.5">@post.DateCreated.ToString("g")</div>
+                                <div class="text-xs text-gray-400 mt-0.5">@GetTimeAgo(post.DateCreated)</div>
                             </a>
                         </div>
 
