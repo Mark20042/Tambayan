@@ -1,13 +1,14 @@
-﻿@{
+﻿@model List<Post>
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <main id="site__main" class="2xl:ml-[--w-side] xl:ml-[--w-side-sm] p-2.5 h-[calc(100vh-var(--m-top))] mt-[--m-top]">
-
     <div class="lg:flex 2xl:gap-16 gap-12 max-w-[1065px] mx-auto w-full" id="js-oversized">
 
         <div class="max-w-[680px] mx-auto flex-2 w-full space-y-6">
 
+            @* stories *@
             <div class="bg-white/50 border border-slate-100 rounded-2xl p-4 shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)] mb-2">
                 <div class="flex items-center justify-between mb-2">
                     <h3 class="font-bold text-sm text-slate-500 uppercase tracking-wider">
@@ -51,104 +52,160 @@
                 </div>
             </div>
 
-            <div class="bg-slate-50 border border-slate-100 rounded-xl p-5 text-sm font-medium text-slate-500 text-center shadow-sm hidden">
-                Currently, there are no posts available. Would you like to create the first one?
+           
+            @* add post  *@
+
+            <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-100 flex items-center gap-3 transition hover:border-slate-200">
+                <img src="~/images/avatar/formal.png" class="w-9 h-9 rounded-full object-cover shadow-sm" alt="My profile picture" />
+
+                <button type="button"
+                        uk-toggle="target: #create-post"
+                        class="flex-1 bg-slate-100/70 hover:bg-slate-100 text-left text-slate-400 rounded-full py-2.5 px-5 text-sm transition cursor-pointer font-normal">
+                    What's on your mind?
+                </button>
+
+                <button type="button"
+                        uk-toggle="target: #create-post"
+                        class="p-2 text-emerald-500 hover:bg-emerald-50 rounded-full transition duration-200">
+                    <ion-icon name="image" class="text-xl"></ion-icon>
+                </button>
             </div>
 
-            <div class="bg-white rounded-xl shadow-sm border border-slate-100 text-sm font-medium overflow-hidden">
+          
+            @* no posts available *@
+            @if (!Model.Any())
+            {
+                <div class="bg-slate-50 border border-slate-100 rounded-xl p-5 text-sm font-medium text-slate-500 text-center shadow-sm">
+                    Currently, there are no posts available. Would you like to create the first one?
+                </div>
+            }
 
-                @* Post heading *@
-                <div class="flex gap-3 sm:p-4 p-3 text-sm font-medium">
-                    <a href="#">
-                        <img src="~/images/avatar/kimminju.jpg" class="w-10 h-10 rounded-full object-cover" />
-                    </a>
-                    <div class="flex-1">
+          
+            @foreach (var post in Model)
+            {
+                <div class="bg-white rounded-xl shadow-sm border border-slate-100 text-sm font-medium overflow-hidden">
+
+                    @* header *@
+                    <div class="flex gap-3 sm:p-4 p-3 text-sm font-medium">
                         <a href="#">
-                            <h4 class="text-black font-semibold">Kim Minju</h4>
-                            <div class="text-xs text-gray-400 mt-0.5">1 day ago</div>
+                            <img src="@(string.IsNullOrEmpty(post.User.ProfilePictureUrl) ? Url.Content("~/images/avatar/user.png") : post.User.ProfilePictureUrl)"
+                                 class="w-10 h-10 rounded-full object-cover" alt="User avatar" />
                         </a>
-                    </div>
+                        <div class="flex-1">
+                            <a href="#">
+                                <h4 class="text-black font-semibold">@post.User.FullName</h4>
+                                <div class="text-xs text-gray-400 mt-0.5">@post.DateCreated.ToString("g")</div>
+                            </a>
+                        </div>
 
-                    <div class="-mr-1">
-                        <button type="button" class="button-icon w-8 h-8 hover:bg-slate-100 rounded-full flex items-center justify-center transition">
-                            <ion-icon class="text-xl text-slate-600" name="ellipsis-horizontal"></ion-icon>
-                        </button>
-                        <div class="w-[245px] bg-white rounded-lg shadow-lg border border-slate-100 overflow-hidden" uk-dropdown="pos: bottom-right; animation: uk-animation-scale-up uk-transform-origin-top-right; animate-out: true; mode: click">
-                            <nav class="text-sm">
-                                <form>
-                                    <input type="hidden" name="postId" />
-                                    <button type="submit" class="w-full flex items-center gap-2 px-4 py-2.5 hover:bg-slate-50 text-slate-700 transition">
-                                        <ion-icon name="lock-closed-outline" class="text-lg"></ion-icon> Set as private
-                                    </button>
-                                </form>
-                                <hr class="border-slate-100">
-                                <form asp-controller="Home" asp-action="Delete">
-                                    <input type="hidden" name="postId" />
-                                    <button type="submit" class="w-full flex items-center gap-2 px-4 py-2.5 hover:bg-red-50 text-red-600 transition">
-                                        <ion-icon name="trash-bin-outline" class="text-lg"></ion-icon> Delete Post
-                                    </button>
-                                </form>
-                                <form asp-controller="Home" asp-action="Report">
-                                    <input type="hidden" name="postId" />
-                                    <button type="submit" class="w-full flex items-center gap-2 px-4 py-2.5 hover:bg-slate-50 text-slate-700 transition">
-                                        <ion-icon name="flag-outline" class="text-lg"></ion-icon> Report
-                                    </button>
-                                </form>
-                            </nav>
+                        @* 3 dots button *@
+                        <div class="-mr-1">
+                            <button type="button" class="button-icon w-8 h-8 hover:bg-slate-100 rounded-full flex items-center justify-center transition">
+                                <ion-icon class="text-xl text-slate-600" name="ellipsis-horizontal"></ion-icon>
+                            </button>
+                            <div class="w-[245px] bg-white rounded-lg shadow-lg border border-slate-100 overflow-hidden" uk-dropdown="pos: bottom-right; animation: uk-animation-scale-up uk-transform-origin-top-right; animate-out: true; mode: click">
+                                <nav class="text-sm">
+                                    <form>
+                                        <input type="hidden" name="postId" value="@post.Id" />
+                                        <button type="submit" class="w-full flex items-center gap-2 px-4 py-2.5 hover:bg-slate-50 text-slate-700 transition">
+                                            <ion-icon name="lock-closed-outline" class="text-lg"></ion-icon> Set as private
+                                        </button>
+                                    </form>
+                                    <hr class="border-slate-100">
+                                    <form asp-controller="Home" asp-action="Delete">
+                                        <input type="hidden" name="postId" value="@post.Id" />
+                                        <button type="submit" class="w-full flex items-center gap-2 px-4 py-2.5 hover:bg-red-50 text-red-600 transition">
+                                            <ion-icon name="trash-bin-outline" class="text-lg"></ion-icon> Delete Post
+                                        </button>
+                                    </form>
+                                    <form asp-controller="Home" asp-action="Report">
+                                        <input type="hidden" name="postId" value="@post.Id" />
+                                        <button type="submit" class="w-full flex items-center gap-2 px-4 py-2.5 hover:bg-slate-50 text-slate-700 transition">
+                                            <ion-icon name="flag-outline" class="text-lg"></ion-icon> Report
+                                        </button>
+                                    </form>
+                                </nav>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                @* Post content *@
-                <div class="sm:px-4 p-5 pt-0 w-full">
-                    <p class="font-normal text-slate-800 leading-relaxed">
-                        Crush mo nak? Girlfriend ko ma.. 🥰
-                    </p>
-                </div>
+                    @* content *@
+                    <div class="sm:px-4 p-5 pt-0 w-full">
+                        <p class="font-normal text-slate-800 leading-relaxed">
+                            @post.Content
+                        </p>
+                    </div>
 
-                <div class="relative w-full border-y border-slate-100 bg-slate-900" style="aspect-ratio: 4 / 5;">
-                    <img src="~/images/posts/kim_minju.jpg" class="w-full h-full object-cover" />
-                </div>
+                    @* images *@
+                    @if (post.Images != null && post.Images.Any())
+                    {
+                        @if (post.Images.Count == 1)
+                        {
+                            @* Standalone full image showcase *@
+                            <div class="relative w-full border-y border-slate-100 bg-slate-900" style="aspect-ratio: 4 / 5;">
+                                <img src="@post.Images.First().ImageUrl" class="w-full h-full object-cover" alt="Post graphic content" />
+                            </div>
+                        }
+                        else
+                        {
+                            @* grid for multiple images *@
+                            <div class="grid gap-1 border-y border-slate-100 bg-slate-100 @(post.Images.Count >= 3 ? "grid-cols-3" : "grid-cols-2")">
+                                @foreach (var image in post.Images)
+                                {
+                                    <div class="relative overflow-hidden aspect-square bg-slate-900">
+                                        <img src="@image.ImageUrl" class="w-full h-full object-cover hover:scale-105 duration-300 ease-in-out" alt="Attached gallery snippet" />
+                                    </div>
+                                }
+                            </div>
+                        }
+                    }
 
-                @* Icons/Actions *@
-                <div class="sm:p-4 p-3 flex items-center gap-5 text-sm font-semibold border-b border-slate-50">
-                    <div class="flex items-center gap-2 hover:text-red-500 transition cursor-pointer">
-                        <div class="w-8 h-8 rounded-full bg-red-50 text-red-500 flex items-center justify-center">
-                            <ion-icon class="text-lg" name="heart"></ion-icon>
+                    @* React *@
+                    <div class="sm:p-4 p-3 flex items-center gap-5 text-sm font-semibold border-b border-slate-50">
+                        <div class="like-btn flex items-center gap-2 text-slate-600 hover:text-red-500 transition cursor-pointer select-none"
+                             data-post-id="@post.Id"
+                             data-likes="0"
+                             data-liked="false">
+                            <div class="icon-container w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center transition duration-200">
+                                <ion-icon class="text-lg transition-transform duration-200" name="heart-outline"></ion-icon>
+                            </div>
+                            <span class="like-count text-slate-600">0</span>
                         </div>
-                        <span class="text-slate-600">24</span>
-                    </div>
 
-                    <div class="flex items-center gap-2 hover:text-blue-500 transition cursor-pointer">
-                        <div class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center">
-                            <ion-icon class="text-lg" name="chatbubble-ellipses-outline"></ion-icon>
+                        <div class="flex items-center gap-2 hover:text-blue-500 transition cursor-pointer">
+                            <div class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center">
+                                <ion-icon class="text-lg" name="chatbubble-ellipses-outline"></ion-icon>
+                            </div>
+                            <span class="text-slate-600">0</span>
                         </div>
-                        <span class="text-slate-600">5</span>
+
+                        <div class="ml-auto">
+                            <button type="button"
+                                    class="bookmark-btn w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition duration-200"
+                                    data-post-id="@post.Id"
+                                    data-bookmarked="false">
+                                <ion-icon class="text-lg transition-transform duration-200" name="bookmark-outline"></ion-icon>
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="ml-auto">
-                        <button class="w-8 h-8 rounded-full hover:bg-slate-100 text-slate-600 flex items-center justify-center transition">
-                            <ion-icon class="text-lg" name="bookmark-outline"></ion-icon>
-                        </button>
+                    @* comment *@
+                    <div class="sm:px-4 sm:py-3 p-3 bg-slate-50/50 flex items-center gap-3">
+                        <img src="~/images/avatar/formal.png" class="w-8 h-8 rounded-full object-cover shadow-sm" alt="Comment account avatar" />
+
+                        <div class="flex-1 relative bg-white border border-slate-200 rounded-full overflow-hidden flex items-center focus-within:border-slate-300 transition">
+                            <input type="text" placeholder="Add Comment..." class="w-full bg-transparent px-4 py-2 text-sm focus:outline-none placeholder-slate-400" />
+                        </div>
+
+                        <button class="text-sm font-semibold rounded-full py-1.5 px-4 bg-slate-200 hover:bg-slate-300 text-slate-700 transition">Comment</button>
                     </div>
+
                 </div>
-
-                @* Add comment section *@
-                <div class="sm:px-4 sm:py-3 p-3 bg-slate-50/50 flex items-center gap-3">
-                    <img src="~/images/avatar/formal.png" class="w-8 h-8 rounded-full object-cover shadow-sm" />
-
-                    <div class="flex-1 relative bg-white border border-slate-200 rounded-full overflow-hidden flex items-center focus-within:border-slate-300 transition">
-                        <input type="text" placeholder="Add Comment..." class="w-full bg-transparent px-4 py-2 text-sm focus:outline-none placeholder-slate-400" />
-                    </div>
-
-                    <button class="text-sm font-semibold rounded-full py-1.5 px-4 bg-slate-200 hover:bg-slate-300 text-slate-700 transition">Comment</button>
-                </div>
-
-            </div>
+            }
 
         </div>
 
-       <div class="flex-1 hidden lg:block w-full max-w-[320px]">
+        <div class="flex-1 hidden lg:block w-full max-w-[320px]">
             <div class="space-y-6 sticky top-24">
                 <div class="bg-transparent rounded-2xl border border-slate-200 p-5">
                     <partial name="Sidebar/_SuggestedFriends"></partial>
@@ -157,11 +214,96 @@
                     <div class="bg-transparent rounded-2xl border border-slate-200 p-5">
                         <partial name="Sidebar/_TrendsForYou"></partial>
                         </div>
+                    </div>
+                </div>
 
             </div>
-        </div>
-        </div>
-</main>
+        </main>
 
-<partial name="Modals/_CreateStory"></partial>
-    <partial name="Modals/_CreatePost"></partial>
+
+        <partial name="Modals/_CreateStory"></partial>
+            <partial name="Modals/_CreatePost"></partial>
+
+
+                @section Scripts {
+                    <script>
+                        document.addEventListener("DOMContentLoaded", () => {
+
+                            // Global click event observer for interactive feed actions
+                            document.body.addEventListener("click", function (e) {
+
+                                
+                                const likeBtn = e.target.closest(".like-btn");
+                                if (likeBtn) {
+                                    const isLiked = likeBtn.getAttribute("data-liked") === "true";
+                                    let count = parseInt(likeBtn.getAttribute("data-likes"), 10) || 0;
+
+                                    const icon = likeBtn.querySelector("ion-icon");
+                                    const countLabel = likeBtn.querySelector(".like-count");
+                                    const container = likeBtn.querySelector(".icon-container");
+
+                                    if (isLiked) {
+                                        count--;
+                                        likeBtn.setAttribute("data-liked", "false");
+                                        icon.setAttribute("name", "heart-outline");
+
+                                        likeBtn.classList.remove("text-red-500");
+                                        likeBtn.classList.add("text-slate-600");
+                                        container.classList.remove("bg-red-50", "text-red-500");
+                                        container.classList.add("bg-slate-100", "text-slate-600");
+                                    } else {
+                                        count++;
+                                        likeBtn.setAttribute("data-liked", "true");
+                                        icon.setAttribute("name", "heart");
+
+                                        likeBtn.classList.remove("text-slate-600");
+                                        likeBtn.classList.add("text-red-500");
+                                        container.classList.remove("bg-slate-100", "text-slate-600");
+                                        container.classList.add("bg-red-50", "text-red-500");
+                                    }
+
+                                    likeBtn.setAttribute("data-likes", count);
+                                    countLabel.textContent = count;
+                                    animateIcon(icon);
+                                    return; 
+                                }
+
+                             
+                                const bookmarkBtn = e.target.closest(".bookmark-btn");
+                                if (bookmarkBtn) {
+                                    const isBookmarked = bookmarkBtn.getAttribute("data-bookmarked") === "true";
+                                    const icon = bookmarkBtn.querySelector("ion-icon");
+
+                                    if (isBookmarked) {
+                                        bookmarkBtn.setAttribute("data-bookmarked", "false");
+                                        icon.setAttribute("name", "bookmark-outline");
+
+                                        // Revert active states
+                                        bookmarkBtn.classList.remove("text-amber-500", "bg-amber-50", "hover:bg-amber-100");
+                                        bookmarkBtn.classList.add("text-slate-600", "bg-slate-100", "hover:bg-slate-200");
+                                    } else {
+                                        bookmarkBtn.setAttribute("data-bookmarked", "true");
+                                        icon.setAttribute("name", "bookmark"); 
+
+                                      
+                                        bookmarkBtn.classList.remove("text-slate-600", "bg-slate-100", "hover:bg-slate-200");
+                                        bookmarkBtn.classList.add("text-amber-500", "bg-amber-50", "hover:bg-amber-100");
+                                    }
+
+                                    animateIcon(icon);
+                                    return;
+                                }
+                            });
+
+                            // Reusable miniature scale-pop animation keyframe generator
+                            function animateIcon(iconElement) {
+                                if (!iconElement) return;
+                                iconElement.style.transform = "scale(1.35)";
+                                setTimeout(() => {
+                                    iconElement.style.transform = "scale(1)";
+                                }, 180);
+                            }
+
+                        });
+                    </script>
+                }
